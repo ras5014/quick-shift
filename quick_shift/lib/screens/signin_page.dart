@@ -22,10 +22,11 @@ class _SignInScreenState extends State<SignInScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Add Quick Shift Logo here with Image
-                Icon(
-                  Icons.android,
-                  size: 100,
-                ),
+                Image.asset(
+'assets/images/Logo.jpg',
+height: 300,
+width: 300,
+
                 // Add Quick Shift Logo here with Image
 
                 // Hello again Message!
