@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_escapes
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,10 +23,10 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 // Add Quick Shift Logo here with Image
                 Image.asset(
-'assets/images/Logo.jpg',
-height: 300,
-width: 300,
-
+                  "assets/images/logo.png",
+                  height: 250,
+                  width: 250,
+                ),
                 // Add Quick Shift Logo here with Image
 
                 // Hello again Message!
