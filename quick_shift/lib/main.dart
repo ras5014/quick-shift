@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quick_shift/screens/signin_page.dart';
+import 'package:quick_shift/screens/check_login_status.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SignInScreen(),
+      home: CheckLoginStatus(),
     );
   }
 }
