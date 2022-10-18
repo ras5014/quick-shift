@@ -13,9 +13,9 @@ class CheckLoginStatus extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return HomePage();
+            return const HomePage();
           } else {
-            return SignInScreen();
+            return const SignInScreen();
           }
         },
       ),
