@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:quick_shift/screens/auth_page.dart';
 import 'package:quick_shift/screens/home_page.dart';
-import 'package:quick_shift/screens/signin_page.dart';
 
 class CheckLoginStatus extends StatelessWidget {
   const CheckLoginStatus({super.key});
@@ -15,7 +15,7 @@ class CheckLoginStatus extends StatelessWidget {
           if (snapshot.hasData) {
             return const HomePage();
           } else {
-            return const SignInScreen();
+            return const AuthPage();
           }
         },
       ),
