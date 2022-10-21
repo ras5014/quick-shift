@@ -21,9 +21,11 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formEmailValidatorKey = GlobalKey<FormState>();
+  final _formPasswordValidatorKey = GlobalKey<FormState>();
 
   Future signIn() async {
-    if (_formEmailValidatorKey.currentState!.validate()) {
+    if (_formEmailValidatorKey.currentState!.validate() &&
+        _formPasswordValidatorKey.currentState!.validate()) {
       // Loading Circle
       showDialog(
           context: context,
@@ -122,23 +124,32 @@ class _SignInScreenState extends State<SignInScreen> {
                 // Password Text Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
+                  child: Form(
+                    key: _formPasswordValidatorKey,
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.deepPurple),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: EdgeInsets.all(20.0),
+                        hintText: 'Password',
+                        prefixIcon: Icon(Icons.password),
+                        fillColor: Colors.grey[200],
+                        filled: true,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.deepPurple),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      contentPadding: EdgeInsets.all(20.0),
-                      hintText: 'Password',
-                      prefixIcon: Icon(Icons.password),
-                      fillColor: Colors.grey[200],
-                      filled: true,
+                      validator: (password) {
+                        if (password == null || password.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ),
