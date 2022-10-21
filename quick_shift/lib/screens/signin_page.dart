@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_escapes, use_build_context_synchronously
 
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,22 +20,25 @@ class _SignInScreenState extends State<SignInScreen> {
   // Text Controllers for the sign-in form
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formEmailValidatorKey = GlobalKey<FormState>();
 
   Future signIn() async {
-    // Loading Circle
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(child: CircularProgressIndicator());
-        });
+    if (_formEmailValidatorKey.currentState!.validate()) {
+      // Loading Circle
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(child: CircularProgressIndicator());
+          });
 
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
-    // Pop the Loading Circle
-    Navigator.of(context).pop();
+      // Pop the Loading Circle
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -80,21 +84,36 @@ class _SignInScreenState extends State<SignInScreen> {
                 // Email Text Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
+                  child: Form(
+                    key: _formEmailValidatorKey,
+                    child: TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.deepPurple),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        hintText: 'Email',
+                        prefixIcon: Icon(Icons.email), // Adds Email Icon
+                        contentPadding: EdgeInsets.all(20.0),
+                        fillColor: Colors.grey[200],
+                        filled: true,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.deepPurple),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      hintText: 'Email',
-                      contentPadding: EdgeInsets.all(20.0),
-                      fillColor: Colors.grey[200],
-                      filled: true,
+                      keyboardType:
+                          TextInputType.emailAddress, // Shows .com in keyboard
+                      autofillHints: [AutofillHints.email],
+                      validator: (email) {
+                        if (email == null ||
+                            email.isEmpty ||
+                            !EmailValidator.validate(email)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ),
@@ -117,6 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       contentPadding: EdgeInsets.all(20.0),
                       hintText: 'Password',
+                      prefixIcon: Icon(Icons.password),
                       fillColor: Colors.grey[200],
                       filled: true,
                     ),
