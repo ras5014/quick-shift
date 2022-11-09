@@ -41,6 +41,8 @@ dependencies:
   firebase_core: ^1.24.0
   firebase_auth: ^3.11.2
   email_validator: ^2.1.17
+  dropdown_button2: ^1.8.9
+  cloud_firestore: ^3.5.1
   # To add assets to your application, add an assets section, like this:
 
 dev_dependencies:

@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +20,33 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _fnameController = TextEditingController();
+  final _lnameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _licenseNoController = TextEditingController();
+  final _veichleNameController = TextEditingController();
+  final _veichleNoController = TextEditingController();
+  // Validators for the sign-up form
   final _formEmailValidatorKey = GlobalKey<FormState>();
   final _formPasswordValidatorKey = GlobalKey<FormState>();
+  final _formFnameValidatorKey = GlobalKey<FormState>();
+  final _formLnameValidatorKey = GlobalKey<FormState>();
+  final _formPhoneValidatorKey = GlobalKey<FormState>();
+  final _formTypeValidatorKey = GlobalKey<FormState>();
+
+  final List<String> typeItems = [
+    'User',
+    'Driver',
+  ];
+
+  final List<String> veichleTypes = [
+    'Small',
+    'Medium',
+    'Large',
+  ];
+
+  String? selectedRegtype;
+  String? selectedVeichletype;
 
   @override
   void dispose() {
@@ -31,15 +58,50 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future signUp() async {
-    if (_formEmailValidatorKey.currentState!.validate() &&
-        _formPasswordValidatorKey.currentState!.validate()) {
+    if (_formFnameValidatorKey.currentState!.validate() &&
+        _formLnameValidatorKey.currentState!.validate() &&
+        _formEmailValidatorKey.currentState!.validate() &&
+        _formPhoneValidatorKey.currentState!.validate() &&
+        _formPasswordValidatorKey.currentState!.validate() &&
+        _formTypeValidatorKey.currentState!.validate()) {
       if (passwordConfirmed()) {
+        // Create User
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+
+        // Add User Details
+        if (selectedRegtype == "User") {
+          addUserDetails();
+        } else {
+          // Add Driver Details
+          addDriverDetails();
+        }
       }
     }
+  }
+
+  // Depending on the Registration Type Add data to User or Driver Database in Firebase
+
+  Future addUserDetails() async {
+    await FirebaseFirestore.instance.collection('users').add({
+      'firstname': _fnameController.text.trim(),
+      'lastname': _lnameController.text.trim(),
+      'phoneNumber': _phoneController.text.trim(),
+    });
+  }
+
+  Future addDriverDetails() async {
+    await FirebaseFirestore.instance.collection('drivers').add({
+      'firstname': _fnameController.text.trim(),
+      'lastname': _lnameController.text.trim(),
+      'phoneNumber': _phoneController.text.trim(),
+      'licenseNumber': _licenseNoController.text.trim(),
+      'veichleName': _veichleNameController.text.trim(),
+      'veichleNumber': _veichleNoController.text.trim(),
+      'veichleType': selectedVeichletype,
+    });
   }
 
   bool passwordConfirmed() {
@@ -75,7 +137,105 @@ class _RegisterPageState extends State<RegisterPage> {
                     fontSize: 20,
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 25),
+
+                // First Name Text Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Form(
+                    key: _formFnameValidatorKey,
+                    child: TextFormField(
+                      controller: _fnameController,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.deepPurple),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        hintText: 'First Name',
+                        contentPadding: EdgeInsets.all(20.0),
+                        fillColor: Colors.grey[200],
+                        filled: true,
+                      ),
+                      validator: (fname) {
+                        if (fname == null || fname.isEmpty) {
+                          return 'Please enter your First Name';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                // Last Name Text Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Form(
+                    key: _formLnameValidatorKey,
+                    child: TextFormField(
+                      controller: _lnameController,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.deepPurple),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        hintText: 'Last Name',
+                        contentPadding: EdgeInsets.all(20.0),
+                        fillColor: Colors.grey[200],
+                        filled: true,
+                      ),
+                      validator: (lname) {
+                        if (lname == null || lname.isEmpty) {
+                          return 'Please enter your Last Name';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                // Phone Number Text Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Form(
+                    key: _formPhoneValidatorKey,
+                    child: TextFormField(
+                      controller: _phoneController,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.deepPurple),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        hintText: 'Phone Number',
+                        prefixIcon: Icon(Icons.phone),
+                        contentPadding: EdgeInsets.all(20.0),
+                        fillColor: Colors.grey[200],
+                        filled: true,
+                      ),
+                      keyboardType: TextInputType.phone,
+                      validator: (phone) {
+                        if (phone == null || phone.isEmpty) {
+                          return 'Please enter your Phone Number';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
 
                 // Email Text Field
                 Padding(
@@ -172,7 +332,223 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 SizedBox(height: 10),
 
-                // Sign In Button
+                // User Type Dropdown Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Form(
+                    key: _formTypeValidatorKey,
+                    child: DropdownButtonFormField2(
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.deepPurple),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: EdgeInsets.all(20.0),
+                        hintText: 'Enter Registration Type',
+                        fillColor: Colors.grey[200],
+                        filled: true,
+                      ),
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black45,
+                      ),
+                      buttonPadding: const EdgeInsets.only(left: 20, right: 10),
+                      dropdownDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      items: typeItems
+                          .map((item) => DropdownMenuItem<String>(
+                                value: item,
+                                child: Text(
+                                  item,
+                                ),
+                              ))
+                          .toList(),
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please select Registration Type.';
+                        }
+                      },
+                      onChanged: (value) {
+                        // This will reload page after selecting a Registration Type, It will reload based on the state of selectedValue
+                        setState(() {
+                          selectedRegtype = value;
+                        });
+                      },
+                      onSaved: (value) {
+                        selectedRegtype = value.toString();
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+
+                // Based on User Type (If Driver Then Show This Below Fields else Do not Show)
+                // License Number
+                Column(
+                  children: <Widget>[
+                    // Only Visible when Driver is selected from Dropdown
+                    if (selectedRegtype == "Driver") ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Form(
+                          child: TextFormField(
+                            controller: _licenseNoController,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.deepPurple),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              hintText: 'License Number',
+                              contentPadding: EdgeInsets.all(20.0),
+                              fillColor: Colors.grey[200],
+                              filled: true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+
+                SizedBox(height: 10),
+
+                // Veichle Name Text Field
+                Column(
+                  children: <Widget>[
+                    // Only Visible when Driver is selected from Dropdown
+                    if (selectedRegtype == "Driver") ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Form(
+                          child: TextFormField(
+                            controller: _veichleNameController,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.deepPurple),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              hintText: 'Veichle Name',
+                              contentPadding: EdgeInsets.all(20.0),
+                              fillColor: Colors.grey[200],
+                              filled: true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+
+                SizedBox(height: 10),
+
+                // Veichle Type Dropdown Field
+                Column(
+                  children: <Widget>[
+                    // Only Visible when Driver is selected from Dropdown
+                    if (selectedRegtype == "Driver") ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Form(
+                          child: DropdownButtonFormField2(
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.deepPurple),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              contentPadding: EdgeInsets.all(20.0),
+                              hintText: 'Enter Veichle Type',
+                              fillColor: Colors.grey[200],
+                              filled: true,
+                            ),
+                            icon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.black45,
+                            ),
+                            buttonPadding:
+                                const EdgeInsets.only(left: 20, right: 10),
+                            dropdownDecoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            items: veichleTypes
+                                .map((item) => DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(
+                                        item,
+                                      ),
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              // Do Smoething here
+                              setState(() {
+                                selectedVeichletype = value.toString();
+                              });
+                            },
+                            onSaved: (value) {
+                              selectedVeichletype = value.toString();
+                            },
+                          ),
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+                SizedBox(height: 10),
+
+                // Veichle Number Text Field
+                Column(
+                  children: <Widget>[
+                    // Only Visible when Driver is selected from Dropdown
+                    if (selectedRegtype == "Driver") ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Form(
+                          child: TextFormField(
+                            controller: _veichleNoController,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.deepPurple),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              hintText: 'Veichle Number',
+                              contentPadding: EdgeInsets.all(20.0),
+                              fillColor: Colors.grey[200],
+                              filled: true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+
+                SizedBox(height: 10),
+
+                // Sign Up Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: GestureDetector(
@@ -220,6 +596,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     )
                   ],
                 ),
+                SizedBox(height: 10),
               ],
             ),
           ),
