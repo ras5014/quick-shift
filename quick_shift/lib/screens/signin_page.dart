@@ -33,12 +33,27 @@ class _SignInScreenState extends State<SignInScreen> {
             return Center(child: CircularProgressIndicator());
           });
 
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+      } on FirebaseAuthException catch (e) {
+        // POP the Loading Circle If error occurs
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+                content: Text(
+              "Wrong Email or Password",
+              textAlign: TextAlign.center,
+            ));
+          },
+        );
+      }
 
-      // Pop the Loading Circle
+      // Pop the Loading Circle After Succesfull SignIn
       Navigator.of(context).pop();
     }
   }
