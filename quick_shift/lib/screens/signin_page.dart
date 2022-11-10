@@ -38,7 +38,9 @@ class _SignInScreenState extends State<SignInScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-      } on FirebaseAuthException catch (e) {
+        // Pop the Loading Circle After Succesfull SignIn
+        Navigator.of(context).pop();
+      } on FirebaseAuthException {
         // POP the Loading Circle If error occurs
         Navigator.of(context).pop();
         showDialog(
@@ -52,9 +54,6 @@ class _SignInScreenState extends State<SignInScreen> {
           },
         );
       }
-
-      // Pop the Loading Circle After Succesfull SignIn
-      Navigator.of(context).pop();
     }
   }
 
