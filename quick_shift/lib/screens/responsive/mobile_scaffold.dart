@@ -32,7 +32,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
 
   late Position currentPosition;
   var geolocator = Geolocator();
-  double bottomPaddingofMap = 0;
+  final bottomPaddingofMap = 0;
 
   late LatLng destination;
   late LatLng source;
@@ -126,11 +126,9 @@ class _MobileScaffoldState extends State<MobileScaffold> {
         // Using Stack because the Box is above the Google Map
         children: [
           GoogleMap(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).size.height * 0.40),
+            padding: const EdgeInsets.only(bottom: 300),
             markers: markers,
             polylines: _polyLine,
-            //padding: EdgeInsets.only(bottom: bottomPaddingofMap),
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
             initialCameraPosition: _kGooglePlex,
