@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -71,6 +71,8 @@ class _RegisterPageState extends State<RegisterPage> {
           password: _passwordController.text.trim(),
         );
 
+        add_userType();
+
         // Add User Details
         if (selectedRegtype == "User") {
           addUserDetails();
@@ -82,10 +84,19 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  // Adding Type of User
+  Future add_userType() async {
+    await FirebaseFirestore.instance.collection('userType').add({
+      'email': _emailController.text.trim(),
+      'type': selectedRegtype,
+    });
+  }
+
   // Depending on the Registration Type Add data to User or Driver Database in Firebase
 
   Future addUserDetails() async {
     await FirebaseFirestore.instance.collection('users').add({
+      'email': _emailController.text.trim(),
       'firstname': _fnameController.text.trim(),
       'lastname': _lnameController.text.trim(),
       'phoneNumber': _phoneController.text.trim(),
@@ -94,6 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future addDriverDetails() async {
     await FirebaseFirestore.instance.collection('drivers').add({
+      'email': _emailController.text.trim(),
       'firstname': _fnameController.text.trim(),
       'lastname': _lnameController.text.trim(),
       'phoneNumber': _phoneController.text.trim(),
@@ -325,6 +337,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       contentPadding: EdgeInsets.all(20.0),
                       hintText: 'Confirm Password',
+                      prefixIcon: Icon(Icons.password),
                       fillColor: Colors.grey[200],
                       filled: true,
                     ),
@@ -477,6 +490,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               contentPadding: EdgeInsets.all(20.0),
                               hintText: 'Enter Veichle Type',
+                              prefixIcon: Icon(Icons.fire_truck_sharp),
                               fillColor: Colors.grey[200],
                               filled: true,
                             ),
