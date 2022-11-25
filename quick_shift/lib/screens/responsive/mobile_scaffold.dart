@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
@@ -11,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
+import 'package:quick_shift/screens/responsive/user_booking.dart';
+import 'package:quick_shift/screens/signin_page.dart';
 
 class MobileScaffold extends StatefulWidget {
   const MobileScaffold({super.key});
@@ -21,18 +24,18 @@ class MobileScaffold extends StatefulWidget {
 
 class _MobileScaffoldState extends State<MobileScaffold> {
   //TextEditingControllers
+  final _dateController = TextEditingController();
   final _searchSourceController = TextEditingController();
   final _searchDestinationController = TextEditingController();
-  final _dateController = TextEditingController();
 
   final Set<Polyline> _polyLine = {};
 
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   late GoogleMapController newGoogleMapController;
 
-  late Position currentPosition;
+  Position? currentPosition;
   var geolocator = Geolocator();
-  final bottomPaddingofMap = 0;
+  double bottomPaddingofMap = 0;
 
   late LatLng destination;
   late LatLng source;
@@ -60,7 +63,8 @@ class _MobileScaffoldState extends State<MobileScaffold> {
     currentPosition = position;
 
     LatLng latLatPosition = LatLng(position.latitude, position.longitude);
-    CameraPosition cameraPosition = new CameraPosition(target: latLatPosition);
+    CameraPosition cameraPosition =
+        new CameraPosition(target: latLatPosition, zoom: 14);
     newGoogleMapController
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
@@ -116,17 +120,84 @@ class _MobileScaffoldState extends State<MobileScaffold> {
     });
   }
 
+  void loadRequestData() async {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: myAppBar,
+      appBar: AppBar(
+        backgroundColor: Colors.grey[900],
+        title: Text('WELCOME ${user!.email!}'),
+        centerTitle: false,
+      ),
       backgroundColor: defaultBackgroundColor,
-      drawer: myDrawer,
+      drawer: Drawer(
+        backgroundColor: Colors.grey[300],
+        child: Column(children: [
+          DrawerHeader(
+            child: ImageIcon(AssetImage('assets/images/logo.png'), size: 160),
+          ),
+          //child: ImageIcon(AssetImage('assets/images/logo.png'), size: 160)),
+          Padding(
+            padding: tilePadding,
+            child: ListTile(
+              leading: Icon(Icons.home),
+              title: Text(
+                'D A S H B O A R D',
+                style: drawerTextColor,
+              ),
+              onTap: (() {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                  return MobileScaffold();
+                }));
+              }),
+            ),
+          ),
+          Padding(
+            padding: tilePadding,
+            child: ListTile(
+              leading: Icon(Icons.account_box),
+              title: Text(
+                'M Y  B O O K I N G S',
+                style: drawerTextColor,
+              ),
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                  return UserBooking();
+                }));
+              },
+            ),
+          ),
+          Padding(
+            padding: tilePadding,
+            child: ListTile(
+              leading: Icon(Icons.logout),
+              title: Text(
+                'L O G O U T',
+                style: drawerTextColor,
+              ),
+              onTap: () {
+                FirebaseAuth.instance.signOut().then((value) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SignInScreen(
+                              showRegisterPage: () {},
+                            )),
+                  );
+                });
+              },
+            ),
+          )
+        ]),
+      ),
       body: Stack(
         // Using Stack because the Box is above the Google Map
         children: [
           GoogleMap(
-            padding: const EdgeInsets.only(bottom: 300),
+            padding: EdgeInsets.only(bottom: bottomPaddingofMap),
             markers: markers,
             polylines: _polyLine,
             mapType: MapType.normal,
@@ -138,7 +209,9 @@ class _MobileScaffoldState extends State<MobileScaffold> {
             onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;
-
+              setState(() {
+                bottomPaddingofMap = 300.0;
+              });
               locatePosition();
             },
           ),
@@ -147,7 +220,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
             right: 0.0,
             bottom: 0.0,
             child: Container(
-              height: 315.0,
+              height: 300.0,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -184,7 +257,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Form(
                             //key: ,
-                            child: TextField(
+                            child: TextFormField(
                               readOnly: true,
                               onTap: _showDatePicker,
                               controller: _dateController,
@@ -289,7 +362,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                 newGoogleMapController.animateCamera(
                                     CameraUpdate.newCameraPosition(
                                         CameraPosition(
-                                            target: destination, zoom: 14)));
+                                            target: destination, zoom: 10)));
                               },
                               controller: _searchDestinationController,
                               decoration: InputDecoration(
@@ -328,7 +401,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 contentPadding: EdgeInsets.all(12.0),
-                                hintText: 'Enter Veichle Type',
+                                hintText: 'Enter Vehicle Type',
                                 prefixIcon: Icon(Icons.fire_truck_sharp),
                                 fillColor: Colors.grey[200],
                                 filled: true,
@@ -359,35 +432,6 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                               onSaved: (value) {
                                 selectedVeichletype = value.toString();
                               },
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        // Enter No. of Vehicle Required (Not Dropdown Keyboard Type Number only)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                          child: Form(
-                            //key: ,
-                            child: TextFormField(
-                              //controller: ,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.deepPurple),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                hintText: 'Enter No. of Veichles Required',
-                                prefixIcon:
-                                    Icon(Icons.numbers), // Adds Email Icon
-                                contentPadding: EdgeInsets.all(12.0),
-                                fillColor: Colors.grey[200],
-                                filled: true,
-                              ),
-                              keyboardType: TextInputType.number,
                             ),
                           ),
                         ),
@@ -451,7 +495,9 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              loadRequestData();
+                            },
                             child: Container(
                               padding: EdgeInsets.all(20),
                               decoration: BoxDecoration(

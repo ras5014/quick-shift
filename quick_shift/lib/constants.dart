@@ -2,9 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-var user = FirebaseAuth
-    .instance.currentUser; // Get User Data from Firebase to show in AppBar
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 var defaultBackgroundColor = Colors.grey[300];
 var tilePadding = const EdgeInsets.only(left: 8.0, right: 8, top: 8);
@@ -62,3 +60,12 @@ var myDrawer = Drawer(
     )
   ]),
 );
+
+var user = FirebaseAuth
+    .instance.currentUser; // Get User Data from Firebase Auth Database
+
+// Accessing Session Data
+var results = FirebaseFirestore.instance
+    .collection('users')
+    .where('email', isEqualTo: "${user!.email}")
+    .get();
