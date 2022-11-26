@@ -1,13 +1,15 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
+import 'package:quick_shift/screens/dataLoader_box.dart';
 import 'package:quick_shift/screens/signin_page.dart';
 
 class UserBooking extends StatefulWidget {
-  const UserBooking({super.key});
+  UserBooking({super.key});
 
   @override
   State<UserBooking> createState() => _UserBookingState();
@@ -85,6 +87,102 @@ class _UserBookingState extends State<UserBooking> {
           )
         ]),
       ),
+      body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('request')
+              .where('userEmail', isEqualTo: user!.email)
+              .snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            return ListView(
+              children: snapshot.data!.docs.map((snap) {
+                return Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
+                    height: 217,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.deepPurple,
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Shift Scheduled On: " + snap['date'].toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Source: " + snap['sourceAddress'].toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Destination: " +
+                                snap['destinationAddress'].toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Driver Name: " + snap['driverName'].toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Driver Phone: " + snap['driverPhoneNo'].toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          thickness: 3,
+                          color: Colors.black54,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Status: " + snap['status'].toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              backgroundColor: Colors.black54,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          }),
     );
   }
 }

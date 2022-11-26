@@ -6,10 +6,9 @@ import 'package:quick_shift/constants.dart';
 import 'package:quick_shift/screens/DashboardPages/driver_scaffold.dart';
 import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
 
-// users Table Data
-// users Table Data
+// Getting users Table Data
 
-late String user_firstname = '', user_phoneNumber = '';
+late String user_firstname = '', user_phoneNumber = '', user_lastname = '';
 
 Future getUser_info() async {
   await FirebaseFirestore.instance
@@ -19,8 +18,11 @@ Future getUser_info() async {
       .then((QuerySnapshot results) {
     user_firstname = results.docs[0]['firstname'];
     user_phoneNumber = results.docs[0]['phoneNumber'];
+    user_lastname = results.docs[0]['lastname'];
   });
 }
+
+// Getting user type
 
 late String type = '';
 Future getUser_type() async {

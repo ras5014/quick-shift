@@ -132,17 +132,17 @@ class _UserScaffoldState extends State<UserScaffold> {
     await getUser_info(); // By using this first we are setting values user_firstname & user_phoneNumber orelse those values will be pushed as NULL to request collection
     // Firebase Database Update Function
     await FirebaseFirestore.instance.collection('request').add({
-      'date': _datetime,
+      'date': "${_datetime.day} / ${_datetime.month} / ${_datetime.year}",
       'sourceAddress': _searchSourceController.text.trim(),
       'destinationAddress': _searchDestinationController.text.trim(),
       'extraServicesRequired': selectedOptionForExtraService,
       'vehicleType': selectedVeichletype,
       'userEmail': user!.email,
-      'userName': user_firstname,
+      'userName': "${user_firstname} ${user_lastname}",
       'userPhoneNo': user_phoneNumber,
-      'driverEmail': "",
-      'driverName': "",
-      'driverPhoneNo': "",
+      'driverEmail': "Assigning...",
+      'driverName': "Assigning",
+      'driverPhoneNo': "Assigning",
       'status': "Processing",
     });
 
