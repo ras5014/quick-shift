@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unused_local_variable, unnecessary_new
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unused_local_variable, unnecessary_new, use_build_context_synchronously, prefer_typing_uninitialized_variables, non_constant_identifier_names
 
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -12,17 +13,18 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
-import 'package:quick_shift/screens/responsive/user_booking.dart';
+import 'package:quick_shift/data_getter.dart';
+import 'package:quick_shift/screens/DashboardPages/user_booking.dart';
 import 'package:quick_shift/screens/signin_page.dart';
 
-class MobileScaffold extends StatefulWidget {
-  const MobileScaffold({super.key});
+class UserScaffold extends StatefulWidget {
+  const UserScaffold({super.key});
 
   @override
-  State<MobileScaffold> createState() => _MobileScaffoldState();
+  State<UserScaffold> createState() => _UserScaffoldState();
 }
 
-class _MobileScaffoldState extends State<MobileScaffold> {
+class _UserScaffoldState extends State<UserScaffold> {
   //TextEditingControllers
   final _dateController = TextEditingController();
   final _searchSourceController = TextEditingController();
@@ -120,14 +122,52 @@ class _MobileScaffoldState extends State<MobileScaffold> {
     });
   }
 
-  void loadRequestData() async {}
+  Future loadRequestData() async {
+    // Circular Loading
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        });
+    await getUser_info(); // By using this first we are setting values user_firstname & user_phoneNumber orelse those values will be pushed as NULL to request collection
+    // Firebase Database Update Function
+    await FirebaseFirestore.instance.collection('request').add({
+      'date': _datetime,
+      'sourceAddress': _searchSourceController.text.trim(),
+      'destinationAddress': _searchDestinationController.text.trim(),
+      'extraServicesRequired': selectedOptionForExtraService,
+      'vehicleType': selectedVeichletype,
+      'userEmail': user!.email,
+      'userName': user_firstname,
+      'userPhoneNo': user_phoneNumber,
+      'driverEmail': "",
+      'driverName': "",
+      'driverPhoneNo': "",
+      'status': "Processing",
+    });
+
+    // Circular Loading Gone
+    Navigator.of(context).pop();
+
+    // Show Dialog of "Your Request will be processed, Kindly check My Bookings for status"
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            content: Text(
+          "Your Request will be processed, Kindly check My Bookings for Status",
+          textAlign: TextAlign.center,
+        ));
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        title: Text('WELCOME ${user!.email!}'),
+        title: Text('WELCOME ${user!.email}'),
         centerTitle: false,
       ),
       backgroundColor: defaultBackgroundColor,
@@ -149,7 +189,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
               onTap: (() {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (BuildContext context) {
-                  return MobileScaffold();
+                  return UserScaffold();
                 }));
               }),
             ),
@@ -496,6 +536,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: GestureDetector(
                             onTap: () {
+                              getUser_info();
                               loadRequestData();
                             },
                             child: Container(

@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quick_shift/constants.dart';
-import 'package:quick_shift/screens/responsive/mobile_scaffold.dart';
+import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
 import 'package:quick_shift/screens/signin_page.dart';
 
 class UserBooking extends StatefulWidget {
@@ -41,7 +41,7 @@ class _UserBookingState extends State<UserBooking> {
               onTap: (() {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (BuildContext context) {
-                  return MobileScaffold();
+                  return UserScaffold();
                 }));
               }),
             ),

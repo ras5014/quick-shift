@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -63,9 +63,3 @@ var myDrawer = Drawer(
 
 var user = FirebaseAuth
     .instance.currentUser; // Get User Data from Firebase Auth Database
-
-// Accessing Session Data
-var results = FirebaseFirestore.instance
-    .collection('users')
-    .where('email', isEqualTo: "${user!.email}")
-    .get();

@@ -1,10 +1,11 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:quick_shift/screens/auth_page.dart';
-import 'package:quick_shift/screens/responsive/desktop_scaffold.dart';
-import 'package:quick_shift/screens/responsive/mobile_scaffold.dart';
-import 'package:quick_shift/screens/responsive/responsive_layout.dart';
-import 'package:quick_shift/screens/responsive/tablet_scaffold.dart';
+import 'package:quick_shift/screens/DashboardPages/driver_scaffold.dart';
+import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
+import 'package:quick_shift/screens/DashboardPages/dashboard_loader.dart';
 
 class CheckLoginStatus extends StatelessWidget {
   const CheckLoginStatus({super.key});
@@ -16,10 +17,9 @@ class CheckLoginStatus extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const ResponsiveLayout(
-              mobileScaffold: MobileScaffold(),
-              tabletScaffold: TabletScaffold(),
-              desktopScaffold: DesktopScaffold(),
+            return DashboardLoader(
+              userScaffold: UserScaffold(),
+              driverScaffold: DriverScaffold(),
             );
           } else {
             return const AuthPage();
