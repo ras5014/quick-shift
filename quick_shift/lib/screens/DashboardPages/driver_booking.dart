@@ -4,25 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quick_shift/constants.dart';
-import 'package:quick_shift/data_getter.dart';
-import 'package:quick_shift/screens/DashboardPages/driver_booking.dart';
+import 'package:quick_shift/screens/DashboardPages/driver_scaffold.dart';
 import 'package:quick_shift/screens/signin_page.dart';
 
-class DriverScaffold extends StatefulWidget {
-  const DriverScaffold({super.key});
+class DriverBooking extends StatefulWidget {
+  const DriverBooking({super.key});
 
   @override
-  State<DriverScaffold> createState() => _UserBookingState();
+  State<DriverBooking> createState() => _DriverBookingState();
 }
 
-class _UserBookingState extends State<DriverScaffold> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getDriver_info();
-  }
-
+class _DriverBookingState extends State<DriverBooking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +48,7 @@ class _UserBookingState extends State<DriverScaffold> {
             child: ListTile(
               leading: Icon(Icons.account_box),
               title: Text(
-                'M Y  S H I F T S',
+                'M Y  B O O K I N G S',
                 style: drawerTextColor,
               ),
               onTap: () {
@@ -93,7 +85,8 @@ class _UserBookingState extends State<DriverScaffold> {
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('request')
-              .where('status', isEqualTo: "Processing")
+              .where('driverEmail', isEqualTo: user!.email)
+              .where('status', isEqualTo: "Shift Accepted")
               .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -229,54 +222,39 @@ class _UserBookingState extends State<DriverScaffold> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 6),
-                        Padding(
+                        SizedBox(height: 15),
+                        Container(
+                          height: 57,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.deepPurple,
+                          ),
+                          child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.deepPurple,
-                                  ),
-                                  onPressed: () {
-                                    FirebaseFirestore.instance
-                                        .collection('request')
-                                        .doc(snap.reference.id)
-                                        .update(
-                                      {
-                                        'driverEmail': user!.email.toString(),
-                                        'driverName':
-                                            '$driver_firstname $driver_lastname',
-                                        'driverPhoneNo': driver_phoneNumber,
-                                        'status': "Shift Accepted",
-                                      },
-                                    );
-                                  },
-                                  child: Text(
-                                    "Accept",
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Status: ${snap['status']} by you",
                                     style: TextStyle(
+                                      color: Colors.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                                SizedBox(width: 40),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.deepPurple,
-                                  ),
-                                  onPressed: () {},
-                                  child: Text(
-                                    "Decline",
+                                  Text(
+                                    "\nIf Completed then Inform Us",
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 10,
                                     ),
                                   ),
-                                ),
-                              ],
-                            )),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

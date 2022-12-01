@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
-import 'package:quick_shift/screens/dataLoader_box.dart';
 import 'package:quick_shift/screens/signin_page.dart';
 
 class UserBooking extends StatefulWidget {
@@ -19,11 +18,7 @@ class _UserBookingState extends State<UserBooking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        title: Text('WELCOME ${user!.email!}'),
-        centerTitle: false,
-      ),
+      appBar: myAppBar,
       backgroundColor: defaultBackgroundColor,
       drawer: Drawer(
         backgroundColor: Colors.grey[300],
@@ -103,76 +98,149 @@ class _UserBookingState extends State<UserBooking> {
                 return Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Container(
-                    height: 217,
+                    height: 200,
                     decoration: BoxDecoration(
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black54,
+                          blurRadius: 10.0,
+                        ),
+                      ],
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.deepPurple,
+                      color: Colors.grey[900],
                     ),
                     child: Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Shift Scheduled On: " + snap['date'].toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.date_range,
+                                color: Colors.deepPurple,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                snap['date'].toString(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Source: " + snap['sourceAddress'].toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
+                        SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      ImageIcon(
+                                        AssetImage("assets/images/source.png"),
+                                        color: Colors.deepPurple,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        snap['sourceAddress'].toString(),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      ImageIcon(
+                                        AssetImage(
+                                            "assets/images/destination.png"),
+                                        color: Colors.deepPurple,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        snap['destinationAddress'].toString(),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Destination: " +
-                                snap['destinationAddress'].toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
+                            SizedBox(width: 30),
+                            Column(
+                              children: [
+                                Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(children: [
+                                      ImageIcon(
+                                        AssetImage("assets/images/driver.png"),
+                                        color: Colors.deepPurple,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        snap['driverName'].toString(),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ])),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      ImageIcon(
+                                        AssetImage(
+                                            "assets/images/driverPhone.png"),
+                                        color: Colors.deepPurple,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        snap['driverPhoneNo'].toString(),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        Container(
+                          height: 57,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.deepPurple,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Driver Name: " + snap['driverName'].toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Driver Phone: " + snap['driverPhoneNo'].toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        Divider(
-                          thickness: 3,
-                          color: Colors.black54,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Status: " + snap['status'].toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              backgroundColor: Colors.black54,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Text(
+                                "Status: " + snap['status'].toString(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  //backgroundColor: Colors.black54,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),

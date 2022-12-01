@@ -1,10 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:quick_shift/constants.dart';
-import 'package:quick_shift/screens/DashboardPages/driver_scaffold.dart';
-import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
 
 // Getting users Table Data
 
@@ -19,6 +16,24 @@ Future getUser_info() async {
     user_firstname = results.docs[0]['firstname'];
     user_phoneNumber = results.docs[0]['phoneNumber'];
     user_lastname = results.docs[0]['lastname'];
+  });
+}
+
+// Getting drivers Table Data
+
+late String driver_firstname = '',
+    driver_phoneNumber = '',
+    driver_lastname = '';
+
+Future getDriver_info() async {
+  await FirebaseFirestore.instance
+      .collection('drivers')
+      .where('email', isEqualTo: user!.email)
+      .get()
+      .then((QuerySnapshot results) {
+    driver_firstname = results.docs[0]['firstname'];
+    driver_phoneNumber = results.docs[0]['phoneNumber'];
+    driver_lastname = results.docs[0]['lastname'];
   });
 }
 

@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+var user = FirebaseAuth
+    .instance.currentUser; // Get User Data from Firebase Auth Database
 
 var defaultBackgroundColor = Colors.grey[300];
 var tilePadding = const EdgeInsets.only(left: 8.0, right: 8, top: 8);
@@ -12,7 +14,7 @@ var drawerTextColor = TextStyle(
 
 var myAppBar = AppBar(
   backgroundColor: Colors.grey[900],
-  title: Text('WELCOME ${user!.email!}'),
+  title: Text('WELCOME ${user!.email}'),
   centerTitle: false,
 );
 
@@ -60,6 +62,3 @@ var myDrawer = Drawer(
     )
   ]),
 );
-
-var user = FirebaseAuth
-    .instance.currentUser; // Get User Data from Firebase Auth Database

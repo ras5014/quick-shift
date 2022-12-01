@@ -25,6 +25,13 @@ class UserScaffold extends StatefulWidget {
 }
 
 class _UserScaffoldState extends State<UserScaffold> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUser_info();
+  }
+
   //TextEditingControllers
   final _dateController = TextEditingController();
   final _searchSourceController = TextEditingController();
@@ -129,7 +136,7 @@ class _UserScaffoldState extends State<UserScaffold> {
         builder: (context) {
           return Center(child: CircularProgressIndicator());
         });
-    await getUser_info(); // By using this first we are setting values user_firstname & user_phoneNumber orelse those values will be pushed as NULL to request collection
+    //await getUser_info(); // By using this first we are setting values user_firstname & user_phoneNumber orelse those values will be pushed as NULL to request collection
     // Firebase Database Update Function
     await FirebaseFirestore.instance.collection('request').add({
       'date': "${_datetime.day} / ${_datetime.month} / ${_datetime.year}",
@@ -165,11 +172,7 @@ class _UserScaffoldState extends State<UserScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        title: Text('WELCOME ${user!.email}'),
-        centerTitle: false,
-      ),
+      appBar: myAppBar,
       backgroundColor: defaultBackgroundColor,
       drawer: Drawer(
         backgroundColor: Colors.grey[300],
@@ -177,7 +180,6 @@ class _UserScaffoldState extends State<UserScaffold> {
           DrawerHeader(
             child: ImageIcon(AssetImage('assets/images/logo.png'), size: 160),
           ),
-          //child: ImageIcon(AssetImage('assets/images/logo.png'), size: 160)),
           Padding(
             padding: tilePadding,
             child: ListTile(
@@ -262,7 +264,7 @@ class _UserScaffoldState extends State<UserScaffold> {
             child: Container(
               height: 300.0,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey[900],
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12)),
@@ -283,13 +285,15 @@ class _UserScaffoldState extends State<UserScaffold> {
                         SizedBox(height: 10),
                         Text(
                           "Hi there !",
-                          style: TextStyle(fontSize: 10),
+                          style: TextStyle(fontSize: 10, color: Colors.white),
                         ),
                         SizedBox(height: 5),
                         Text(
                           "Where to SHIFT ?",
-                          style:
-                              TextStyle(fontSize: 18, fontFamily: "Brand-Bold"),
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: "Brand-Bold",
+                              color: Colors.white),
                         ),
                         SizedBox(height: 15),
                         // Book Schedule from Calendor
