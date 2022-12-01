@@ -571,9 +571,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 // Sign Up Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: GestureDetector(
+                  child: InkWell(
                     onTap: signUp,
-                    child: Container(
+                    child: Ink(
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.deepPurple,

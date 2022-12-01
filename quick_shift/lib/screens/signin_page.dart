@@ -199,9 +199,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 // Sign In Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: GestureDetector(
+                  child: InkWell(
                     onTap: signIn,
-                    child: Container(
+                    child: Ink(
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.deepPurple,

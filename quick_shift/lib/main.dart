@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:quick_shift/screens/check_login_status.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';

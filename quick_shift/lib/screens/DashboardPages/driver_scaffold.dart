@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:quick_shift/data_getter.dart';
 import 'package:quick_shift/screens/DashboardPages/driver_booking.dart';
@@ -94,6 +95,7 @@ class _UserBookingState extends State<DriverScaffold> {
           stream: FirebaseFirestore.instance
               .collection('request')
               .where('status', isEqualTo: "Processing")
+              .orderBy('date', descending: true)
               .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -215,11 +217,18 @@ class _UserBookingState extends State<DriverScaffold> {
                                         color: Colors.deepPurple,
                                       ),
                                       SizedBox(width: 5),
-                                      Text(
-                                        snap['userPhoneNo'].toString(),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
+                                      GestureDetector(
+                                        onTap: () async {
+                                          await FlutterPhoneDirectCaller
+                                              .callNumber(snap['userPhoneNo']
+                                                  .toString());
+                                        },
+                                        child: Text(
+                                          snap['userPhoneNo'].toString(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                          ),
                                         ),
                                       ),
                                     ],

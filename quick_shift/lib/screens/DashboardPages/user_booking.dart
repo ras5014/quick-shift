@@ -1,8 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings, no_leading_underscores_for_local_identifiers, unused_element, unused_local_variable
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
 import 'package:quick_shift/screens/signin_page.dart';
@@ -86,6 +87,7 @@ class _UserBookingState extends State<UserBooking> {
           stream: FirebaseFirestore.instance
               .collection('request')
               .where('userEmail', isEqualTo: user!.email)
+              .orderBy('date', descending: true)
               .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -207,11 +209,18 @@ class _UserBookingState extends State<UserBooking> {
                                         color: Colors.deepPurple,
                                       ),
                                       SizedBox(width: 5),
-                                      Text(
-                                        snap['driverPhoneNo'].toString(),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
+                                      GestureDetector(
+                                        onTap: () async {
+                                          await FlutterPhoneDirectCaller
+                                              .callNumber(snap['driverPhoneNo']
+                                                  .toString());
+                                        },
+                                        child: Text(
+                                          snap['driverPhoneNo'].toString(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -231,16 +240,38 @@ class _UserBookingState extends State<UserBooking> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Text(
-                                "Status: " + snap['status'].toString(),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  //backgroundColor: Colors.black54,
-                                  fontWeight: FontWeight.bold,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Status: " + snap['status'].toString(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    //backgroundColor: Colors.black54,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
+                                SizedBox(width: 30),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey[900],
+                                  ),
+                                  onPressed: () {
+                                    FirebaseFirestore.instance
+                                        .collection('request')
+                                        .doc(snap.reference.id)
+                                        .delete();
+                                  },
+                                  child: Text(
+                                    "Cancel SHIFT",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
