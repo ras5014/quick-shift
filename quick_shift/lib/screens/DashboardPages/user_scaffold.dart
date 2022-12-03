@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:intl/intl.dart'; // For Calendor
@@ -15,7 +16,6 @@ import 'package:quick_shift/constants.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
 import 'package:quick_shift/data_getter.dart';
 import 'package:quick_shift/screens/DashboardPages/user_booking.dart';
-import 'package:quick_shift/screens/signin_page.dart';
 
 class UserScaffold extends StatefulWidget {
   const UserScaffold({super.key});
@@ -220,16 +220,9 @@ class _UserScaffoldState extends State<UserScaffold> {
                 'L O G O U T',
                 style: drawerTextColor,
               ),
-              onTap: () {
-                FirebaseAuth.instance.signOut().then((value) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SignInScreen(
-                              showRegisterPage: () {},
-                            )),
-                  );
-                });
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                Phoenix.rebirth(context);
               },
             ),
           )

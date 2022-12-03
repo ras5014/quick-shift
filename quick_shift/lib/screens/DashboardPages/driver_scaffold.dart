@@ -3,11 +3,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:quick_shift/data_getter.dart';
 import 'package:quick_shift/screens/DashboardPages/driver_booking.dart';
-import 'package:quick_shift/screens/signin_page.dart';
 
 class DriverScaffold extends StatefulWidget {
   const DriverScaffold({super.key});
@@ -77,15 +77,8 @@ class _UserBookingState extends State<DriverScaffold> {
                 style: drawerTextColor,
               ),
               onTap: () {
-                FirebaseAuth.instance.signOut().then((value) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SignInScreen(
-                              showRegisterPage: () {},
-                            )),
-                  );
-                });
+                FirebaseAuth.instance.signOut();
+                Phoenix.rebirth(context);
               },
             ),
           )

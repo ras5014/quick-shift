@@ -1,12 +1,12 @@
-// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings, no_leading_underscores_for_local_identifiers, unused_element, unused_local_variable
+// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings, no_leading_underscores_for_local_identifiers, unused_element, unused_local_variable, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:quick_shift/constants.dart';
 import 'package:quick_shift/screens/DashboardPages/user_scaffold.dart';
-import 'package:quick_shift/screens/signin_page.dart';
 
 class UserBooking extends StatefulWidget {
   UserBooking({super.key});
@@ -68,16 +68,9 @@ class _UserBookingState extends State<UserBooking> {
                 'L O G O U T',
                 style: drawerTextColor,
               ),
-              onTap: () {
-                FirebaseAuth.instance.signOut().then((value) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SignInScreen(
-                              showRegisterPage: () {},
-                            )),
-                  );
-                });
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                Phoenix.rebirth(context);
               },
             ),
           )
@@ -258,10 +251,24 @@ class _UserBookingState extends State<UserBooking> {
                                     backgroundColor: Colors.grey[900],
                                   ),
                                   onPressed: () {
-                                    FirebaseFirestore.instance
-                                        .collection('request')
-                                        .doc(snap.reference.id)
-                                        .delete();
+                                    if (snap['status'].toString() ==
+                                        "Processing") {
+                                      FirebaseFirestore.instance
+                                          .collection('request')
+                                          .doc(snap.reference.id)
+                                          .delete();
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                              content: Text(
+                                            "Your Request has been accepted, Please contact us to cancel",
+                                            textAlign: TextAlign.center,
+                                          ));
+                                        },
+                                      );
+                                    }
                                   },
                                   child: Text(
                                     "Cancel SHIFT",

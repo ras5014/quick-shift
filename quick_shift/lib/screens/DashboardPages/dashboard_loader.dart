@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:quick_shift/data_getter.dart';
 
 class DashboardLoader extends StatelessWidget {
