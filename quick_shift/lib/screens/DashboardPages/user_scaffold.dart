@@ -29,13 +29,17 @@ class _UserScaffoldState extends State<UserScaffold> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUser_info();
+    getUser_info(); // By using this first we are setting values user_firstname & user_phoneNumber orelse those values will be pushed as NULL to request collection
   }
 
   //TextEditingControllers
   final _dateController = TextEditingController();
   final _searchSourceController = TextEditingController();
   final _searchDestinationController = TextEditingController();
+  // Validators
+  final _formDateValidatorKey = GlobalKey<FormState>();
+  final _formSourceValidatorKey = GlobalKey<FormState>();
+  final _formDestinationValidatorKey = GlobalKey<FormState>();
 
   final Set<Polyline> _polyLine = {};
 
@@ -136,37 +140,42 @@ class _UserScaffoldState extends State<UserScaffold> {
         builder: (context) {
           return Center(child: CircularProgressIndicator());
         });
-    //await getUser_info(); // By using this first we are setting values user_firstname & user_phoneNumber orelse those values will be pushed as NULL to request collection
+
     // Firebase Database Update Function
-    await FirebaseFirestore.instance.collection('request').add({
-      'date': "${_datetime.day} / ${_datetime.month} / ${_datetime.year}",
-      'sourceAddress': _searchSourceController.text.trim(),
-      'destinationAddress': _searchDestinationController.text.trim(),
-      'extraServicesRequired': selectedOptionForExtraService,
-      'vehicleType': selectedVeichletype,
-      'userEmail': user!.email,
-      'userName': "${user_firstname} ${user_lastname}",
-      'userPhoneNo': user_phoneNumber,
-      'driverEmail': "Assigning...",
-      'driverName': "Assigning",
-      'driverPhoneNo': "Assigning",
-      'status': "Processing",
-    });
+    if (_formDateValidatorKey.currentState!.validate() &&
+        _formSourceValidatorKey.currentState!.validate() &&
+        _formDestinationValidatorKey.currentState!.validate()) {
+      await FirebaseFirestore.instance.collection('request').add({
+        'date': "${_datetime.day} / ${_datetime.month} / ${_datetime.year}",
+        'sourceAddress': _searchSourceController.text.trim(),
+        'destinationAddress': _searchDestinationController.text.trim(),
+        'extraServicesRequired': selectedOptionForExtraService,
+        'vehicleType': selectedVeichletype,
+        'userEmail': user!.email,
+        'userName': "${user_firstname} ${user_lastname}",
+        'userPhoneNo': user_phoneNumber,
+        'driverEmail': "Assigning...",
+        'driverName': "Assigning",
+        'driverPhoneNo': "Assigning",
+        'status': "Processing",
+      });
+      Navigator.of(context).pop();
 
-    // Circular Loading Gone
-    Navigator.of(context).pop();
-
-    // Show Dialog of "Your Request will be processed, Kindly check My Bookings for status"
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-            content: Text(
-          "Your Request will be processed, Kindly check My Bookings for Status",
-          textAlign: TextAlign.center,
-        ));
-      },
-    );
+      // Show Dialog of "Your Request will be processed, Kindly check My Bookings for status"
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+              content: Text(
+            "Your Request will be processed, Kindly check My Bookings for Status",
+            textAlign: TextAlign.center,
+          ));
+        },
+      );
+    } else {
+      // Circular Loading Gone
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -293,7 +302,7 @@ class _UserScaffoldState extends State<UserScaffold> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Form(
-                            //key: ,
+                            key: _formDateValidatorKey,
                             child: TextFormField(
                               readOnly: true,
                               onTap: _showDatePicker,
@@ -314,6 +323,12 @@ class _UserScaffoldState extends State<UserScaffold> {
                                 fillColor: Colors.grey[200],
                                 filled: true,
                               ),
+                              validator: (date) {
+                                if (date == null || date.isEmpty) {
+                                  return 'Please enter a Date';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
@@ -322,7 +337,7 @@ class _UserScaffoldState extends State<UserScaffold> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Form(
-                            //key: ,
+                            key: _formSourceValidatorKey,
                             child: TextFormField(
                               readOnly: true,
                               onTap: () async {
@@ -365,6 +380,12 @@ class _UserScaffoldState extends State<UserScaffold> {
                                 fillColor: Colors.grey[200],
                                 filled: true,
                               ),
+                              validator: (sourceLoc) {
+                                if (sourceLoc == null || sourceLoc.isEmpty) {
+                                  return 'Please enter Source Location';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
@@ -373,7 +394,7 @@ class _UserScaffoldState extends State<UserScaffold> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Form(
-                            //key: ,
+                            key: _formDestinationValidatorKey,
                             child: TextFormField(
                               readOnly: true,
                               onTap: () async {
@@ -418,6 +439,13 @@ class _UserScaffoldState extends State<UserScaffold> {
                                 fillColor: Colors.grey[200],
                                 filled: true,
                               ),
+                              validator: (destinationLoc) {
+                                if (destinationLoc == null ||
+                                    destinationLoc.isEmpty) {
+                                  return 'Please enter a Destination location';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),

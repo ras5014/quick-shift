@@ -49,6 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String? selectedVeichletype;
 
   @override
+  // To free the memory after Use
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();

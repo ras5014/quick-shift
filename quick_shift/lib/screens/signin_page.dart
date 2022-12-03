@@ -58,6 +58,7 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   @override
+  // To free the memory after Use
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
